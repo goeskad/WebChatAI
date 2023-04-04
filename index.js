@@ -2,6 +2,13 @@ const express = require("express");
 const app = express();
 const axios = require("axios");
 
+aiHost = process.env.AI_HOST;
+aiToken = process.env.AI_TOKEN;
+
+header = {
+    'Authorization': `Bearer ${aiToken}`
+}
+
 app.set("view engine", "ejs");
 // app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -14,7 +21,8 @@ app.post("/getKbsQuestions", async (req, res) => {
     const userInput = req.body.input;
     try {
         console.log('get user input', req.body);
-        const response = await axios.post("http://localhost:8000/getKbsQuestions", {text: userInput});
+        const response = await axios.post(aiHost + "/getKbsQuestions", {text: userInput},
+            {headers: header});
         res.send(response.data);
     } catch (error) {
         console.error(error.text);
@@ -26,7 +34,9 @@ app.post("/chat", async (req, res) => {
     const userInput = req.body.input;
     const kbsQueries = req.body.kbsQueries;
     try {
-        const response = await axios.post("http://localhost:8000/chat", {text: userInput, kbsQueries: kbsQueries});
+        const response = await axios.post(aiHost + "/chat", 
+            {text: userInput, kbsQueries: kbsQueries},
+            {headers: header});
         res.send(response.data);
     } catch (error) {
         console.error(error.text);
